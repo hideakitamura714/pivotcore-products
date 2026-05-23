@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PivotCore 製品管理画面</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy:#163A8D;--navy-dark:#0d2260;--red:#b91c1c;
+      --s50:#f8fafc;--s100:#f1f5f9;--s200:#e2e8f0;--s300:#cbd5e1;
+      --s400:#94a3b8;--s500:#64748b;--s600:#475569;--s700:#334155;--s900:#0f172a;
+      --green:#16a34a;--green-bg:#dcfce7;--orange:#ea580c;--orange-bg:#fff7ed;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Noto Sans JP',sans-serif;background:var(--s100);color:var(--s900);min-height:100vh;}
+
+    /* ログイン */
+    #login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--navy-dark),var(--navy));}
+    .login-box{background:white;border-radius:4px;padding:48px 40px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+    .login-logo{text-align:center;margin-bottom:28px;}
+    .login-logo img{height:36px;margin-bottom:8px;}
+    .login-logo p{font-size:12px;color:var(--s500);}
+    .login-title{font-size:16px;font-weight:700;color:var(--navy);text-align:center;margin-bottom:24px;padding-bottom:16px;border-bottom:2px solid var(--s100);}
+    .field{margin-bottom:18px;}
+    .field label{display:block;font-size:11px;font-weight:700;color:var(--s500);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;}
+    .field input{width:100%;padding:11px 14px;border:2px solid var(--s200);border-radius:2px;font-size:14px;font-family:'Noto Sans JP',sans-serif;outline:none;transition:border-color .2s;}
+    .field input:focus{border-color:var(--navy);}
+    .login-btn{width:100%;padding:13px;background:var(--navy);color:white;border:none;border-radius:2px;font-size:14px;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;}
+    .login-btn:hover{background:var(--navy-dark);}
+    .login-error{background:#fef2f2;border:1px solid #fecaca;color:var(--red);padding:10px 14px;border-radius:2px;font-size:13px;margin-top:10px;display:none;}
+
+    #main-screen,#preview-screen,#detail-screen{display:none;}
+
+    /* ヘッダー */
+    .header{color:white;padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.2);}
+    .header-main{background:var(--navy);}
+    .header-preview{background:var(--navy-dark);}
+    .header-detail{background:#1e293b;}
+    .header-left{display:flex;align-items:center;gap:14px;}
+    .header-left img{height:26px;}
+    .header-title{font-size:14px;font-weight:700;opacity:.9;border-left:2px solid rgba(255,255,255,.3);padding-left:14px;}
+    .header-right{display:flex;align-items:center;gap:10px;}
+    .hbtn{padding:7px 16px;font-size:12px;font-weight:700;font-family:'Noto Sans JP',sans-serif;border-radius:2px;cursor:pointer;transition:all .2s;border:none;}
+    .hbtn-ghost{background:rgba(255,255,255,.15);color:white;border:1px solid rgba(255,255,255,.3);}
+    .hbtn-ghost:hover{background:rgba(255,255,255,.25);}
+    .hbtn-white{background:white;color:var(--navy);}
+    .hbtn-white:hover{background:var(--s100);}
+    .hbtn-red{background:var(--red);color:white;}
+    .hbtn-red:hover{background:#991b1b;}
+    .hbtn-red:disabled{background:var(--s400);cursor:not-allowed;}
+    .screen-badge{background:var(--orange);color:white;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+    .screen-badge-detail{background:#334155;}
+
+    /* コンテンツ */
+    .content{padding:32px;max-width:1100px;margin:0 auto;}
+
+    /* GitHub設定 */
+    .settings-panel{background:white;border-radius:4px;padding:18px 24px;margin-bottom:24px;box-shadow:0 1px 4px rgba(0,0,0,.08);border-left:4px solid var(--s300);}
+    .settings-panel h3{font-size:13px;font-weight:700;color:var(--s600);margin-bottom:10px;}
+    .settings-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;}
+    .sf{flex:1;min-width:160px;}
+    .sf label{display:block;font-size:11px;font-weight:700;color:var(--s400);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;}
+    .sf input{width:100%;padding:8px 10px;border:1px solid var(--s200);border-radius:2px;font-size:13px;font-family:'JetBrains Mono',monospace;outline:none;}
+    .sf input:focus{border-color:var(--navy);}
+    .sbtn{padding:9px 18px;background:var(--s600);color:white;border:none;border-radius:2px;font-size:12px;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;white-space:nowrap;}
+
+    /* セクション */
+    .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+    .section-title{font-size:16px;font-weight:700;color:var(--s700);}
+    .add-btn{background:var(--navy);color:white;border:none;padding:10px 20px;font-size:13px;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;border-radius:2px;display:flex;align-items:center;gap:6px;}
+    .add-btn:hover{background:var(--navy-dark);}
+
+    /* テーブル */
+    .table-wrap{background:white;border-radius:4px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.08);}
+    table{width:100%;border-collapse:collapse;}
+    thead{background:var(--navy);color:white;}
+    thead th{padding:12px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;}
+    tbody tr{border-bottom:1px solid var(--s100);transition:background .15s;}
+    tbody tr:last-child{border-bottom:none;}
+    tbody tr:hover{background:var(--s50);}
+    tbody td{padding:12px 16px;font-size:13px;vertical-align:middle;}
+    .pn{font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--navy);font-size:13px;}
+    .badge{display:inline-block;padding:2px 8px;border-radius:2px;font-size:11px;font-weight:700;}
+    .badge-ll{background:#fef2f2;color:var(--red);}
+    .badge-no{background:var(--s100);color:var(--s500);}
+    .badge-cat{background:#eff6ff;color:var(--navy);font-size:11px;font-weight:700;padding:2px 8px;border-radius:2px;}
+    .action-btns{display:flex;gap:6px;align-items:center;}
+    .tbtn{padding:5px 12px;font-size:12px;font-weight:700;font-family:'Noto Sans JP',sans-serif;border:none;border-radius:2px;cursor:pointer;transition:all .15s;}
+    .tbtn-edit{background:var(--s100);color:var(--s700);}
+    .tbtn-edit:hover{background:var(--s200);}
+    .tbtn-del{background:#fef2f2;color:var(--red);}
+    .tbtn-del:hover{background:#fee2e2;}
+    .tbtn-up,.tbtn-down{background:var(--s100);color:var(--s600);padding:5px 9px;font-size:14px;line-height:1;}
+    .tbtn-up:hover,.tbtn-down:hover{background:var(--s200);}
+    .tbtn-up:disabled,.tbtn-down:disabled{opacity:.3;cursor:not-allowed;}
+    .empty-state{text-align:center;padding:60px 20px;color:var(--s400);}
+
+    /* モーダル */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:center;justify-content:center;}
+    .overlay.open{display:flex;}
+    .modal{background:white;border-radius:4px;padding:36px;width:100%;max-width:620px;box-shadow:0 20px 60px rgba(0,0,0,.3);max-height:92vh;overflow-y:auto;}
+    .modal-title{font-size:18px;font-weight:700;color:var(--navy);margin-bottom:8px;padding-bottom:16px;border-bottom:2px solid var(--s100);}
+    .modal-section{font-size:12px;font-weight:700;color:var(--s400);text-transform:uppercase;letter-spacing:.08em;margin:20px 0 14px;padding-bottom:6px;border-bottom:1px solid var(--s100);}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    .form-field{margin-bottom:16px;}
+    .form-field label{display:block;font-size:11px;font-weight:700;color:var(--s500);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px;}
+    .form-field input,.form-field select,.form-field textarea{width:100%;padding:9px 12px;border:2px solid var(--s200);border-radius:2px;font-size:14px;font-family:'Noto Sans JP',sans-serif;outline:none;transition:border-color .2s;}
+    .form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:var(--navy);}
+    .form-field textarea{resize:vertical;min-height:72px;}
+    .form-field .hint{font-size:11px;color:var(--s400);margin-top:4px;}
+    .cb-field{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+    .cb-field label{font-size:14px;color:var(--s700);cursor:pointer;}
+    .cb-field input[type=checkbox]{width:18px;height:18px;accent-color:var(--navy);cursor:pointer;}
+    .modal-actions{display:flex;gap:12px;justify-content:flex-end;margin-top:20px;padding-top:20px;border-top:2px solid var(--s100);}
+    .btn-cancel{padding:10px 20px;background:var(--s100);color:var(--s700);border:none;border-radius:2px;font-size:13px;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;}
+    .btn-save{padding:10px 24px;background:var(--navy);color:white;border:none;border-radius:2px;font-size:13px;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;}
+
+    /* 用途入力グリッド */
+    .usage-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+    /* プレビュー */
+    .preview-note{background:var(--orange-bg);border-left:4px solid var(--orange);border-radius:4px;padding:16px 24px;margin-bottom:24px;}
+    .preview-note h3{font-size:14px;font-weight:700;color:var(--orange);margin-bottom:4px;}
+    .preview-note p{font-size:13px;color:var(--s600);}
+    .diff-legend{display:flex;gap:16px;margin-bottom:14px;flex-wrap:wrap;}
+    .diff-legend span{font-size:12px;color:var(--s600);display:flex;align-items:center;gap:6px;}
+    .dl{width:12px;height:12px;border-radius:2px;}
+    .preview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;margin-bottom:32px;}
+    .preview-card{background:white;border-radius:4px;border-top:4px solid var(--red);padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.08);cursor:pointer;transition:box-shadow .2s,transform .2s;}
+    .preview-card:hover{box-shadow:0 6px 20px rgba(22,58,141,.12);transform:translateY(-2px);}
+    .preview-card .cat{font-size:11px;font-weight:700;color:var(--s400);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;}
+    .preview-card .pn-lg{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--navy);font-size:14px;margin-bottom:6px;word-break:break-all;}
+    .preview-card .maker{font-size:13px;color:var(--s500);margin-bottom:12px;}
+    .preview-card .ll-badge{display:inline-block;background:var(--red);color:white;font-size:10px;font-weight:700;padding:2px 8px;margin-bottom:12px;}
+    .rfq-btn-prev{display:block;width:100%;text-align:center;background:var(--red);color:white;border:none;padding:8px;font-size:12px;font-weight:700;font-family:'Noto Sans JP',sans-serif;border-radius:2px;cursor:pointer;}
+    .rfq-btn-prev:hover{background:#991b1b;}
+    .click-hint{font-size:11px;color:var(--s400);text-align:center;margin-top:8px;}
+    .diff-added{background:#f0fdf4;border-top-color:var(--green);}
+    .diff-changed{background:#fefce8;border-top-color:var(--orange);}
+    .diff-removed{background:#fef2f2;border-top-color:var(--red);opacity:.6;cursor:default;}
+    .diff-tag{font-size:10px;font-weight:700;padding:1px 6px;border-radius:2px;margin-left:6px;}
+    .diff-tag-added{background:var(--green-bg);color:var(--green);}
+    .diff-tag-changed{background:var(--orange-bg);color:var(--orange);}
+    .diff-tag-removed{background:#fef2f2;color:var(--red);}
+    .pub-status{font-size:13px;padding:6px 12px;border-radius:2px;display:none;}
+    .pub-status.ok{background:var(--green-bg);color:var(--green);display:inline-block;}
+    .pub-status.err{background:#fef2f2;color:var(--red);display:inline-block;}
+    .pub-status.ing{background:var(--orange-bg);color:var(--orange);display:inline-block;}
+
+    /* 詳細プレビュー */
+    .detail-content{padding:32px;max-width:1000px;margin:0 auto;}
+    .breadcrumb{font-size:13px;color:rgba(255,255,255,.7);margin-bottom:8px;}
+    .breadcrumb a{color:rgba(255,255,255,.7);text-decoration:none;cursor:pointer;}
+    .breadcrumb a:hover{color:white;}
+    .detail-hero{background:var(--navy);color:white;padding:28px 32px;}
+    .detail-hero-badges{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+    .dbadge{font-size:12px;font-weight:700;padding:3px 10px;border-radius:2px;}
+    .dbadge-cat{background:rgba(255,255,255,.15);color:white;}
+    .dbadge-ll{background:var(--red);color:white;}
+    .dbadge-pkg{background:rgba(255,255,255,.12);color:rgba(255,255,255,.9);}
+    .detail-pn{font-family:'JetBrains Mono',monospace;font-size:30px;font-weight:700;margin-bottom:6px;word-break:break-all;}
+    .detail-maker{font-size:17px;opacity:.8;}
+    .detail-body{display:grid;grid-template-columns:1fr 300px;gap:32px;margin-top:32px;}
+    @media(max-width:700px){.detail-body{grid-template-columns:1fr;}}
+
+    /* スペックテーブル */
+    .spec-table{border:1px solid var(--s200);border-radius:4px;overflow:hidden;margin-bottom:24px;}
+    .spec-table-grid{display:grid;grid-template-columns:1fr 1fr;}
+    .spec-row{display:grid;grid-template-columns:140px 1fr;border-bottom:1px solid var(--s200);}
+    .spec-row:last-child{border-bottom:none;}
+    .spec-key{padding:11px 16px;font-size:13px;font-weight:700;color:var(--s500);background:var(--s50);}
+    .spec-val{padding:11px 16px;font-size:13px;background:white;}
+    .spec-val a{color:var(--navy);text-decoration:underline;}
+    .spec-val a:hover{color:var(--red);}
+    /* 2列スペックテーブル */
+    .spec-table-2col .spec-row{display:contents;}
+    .spec-table-2col{display:grid;grid-template-columns:140px 1fr 140px 1fr;border:1px solid var(--s200);border-radius:4px;overflow:hidden;margin-bottom:24px;}
+    .spec-table-2col .spec-key{border-bottom:1px solid var(--s200);border-right:1px solid var(--s200);}
+    .spec-table-2col .spec-val{border-bottom:1px solid var(--s200);border-right:1px solid var(--s200);}
+    .spec-table-2col .spec-val:last-child,.spec-table-2col .spec-key:nth-child(4n){border-right:none;}
+
+    /* 用途例 */
+    .usage-section{background:var(--s50);border-radius:4px;padding:20px;margin-bottom:24px;}
+    .usage-title{font-size:14px;font-weight:700;color:var(--s700);margin-bottom:12px;}
+    .usage-list{display:flex;flex-wrap:wrap;gap:8px;}
+    .usage-tag{background:white;border:1px solid var(--s200);border-radius:20px;padding:4px 14px;font-size:13px;color:var(--s700);}
+    .usage-tag-last{background:white;border:1px solid var(--s200);border-radius:20px;padding:4px 14px;font-size:13px;color:var(--s700);display:flex;align-items:center;gap:4px;}
+    .usage-nado{font-size:12px;color:var(--s400);font-style:italic;}
+
+    .detail-desc-box{background:var(--s50);border-left:4px solid var(--navy);padding:18px;border-radius:4px;margin-bottom:20px;}
+    .detail-desc-box p{font-size:14px;color:var(--s700);line-height:1.8;}
+    .detail-section-title{font-size:17px;font-weight:700;color:var(--navy);margin-bottom:14px;padding-left:12px;border-left:4px solid var(--red);}
+    .detail-policy{background:var(--s50);padding:18px;border-radius:4px;}
+    .detail-policy .plabel{font-size:11px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;}
+    .detail-policy ul{font-size:13px;color:var(--s600);list-style:disc;padding-left:18px;line-height:2.2;}
+    .rfq-box{background:white;border:2px solid var(--navy);border-radius:4px;padding:22px;position:sticky;top:80px;}
+    .rfq-box h3{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:8px;}
+    .rfq-box p{font-size:13px;color:var(--s500);margin-bottom:18px;line-height:1.7;}
+    .rfq-box-btn{display:block;width:100%;text-align:center;background:var(--red);color:white;border:none;padding:13px;font-size:14px;font-weight:700;font-family:'Noto Sans JP',sans-serif;border-radius:2px;cursor:pointer;margin-bottom:10px;}
+    .rfq-box-btn:hover{background:#991b1b;}
+    .rfq-box-tel{display:block;width:100%;text-align:center;border:2px solid var(--navy);color:var(--navy);padding:9px;font-size:13px;font-weight:700;font-family:'Noto Sans JP',sans-serif;border-radius:2px;cursor:pointer;background:white;}
+    .rfq-note{font-size:11px;color:var(--s400);text-align:center;margin-top:8px;line-height:1.6;}
+    .back-to-list{font-size:13px;color:var(--s500);margin-top:14px;text-align:center;display:block;cursor:pointer;}
+    .back-to-list:hover{color:var(--navy);}
+    .related-section{margin-top:36px;}
+    .related-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:12px;}
+    .related-card{background:white;border:1px solid var(--s200);border-radius:4px;padding:16px;cursor:pointer;transition:box-shadow .2s;}
+    .related-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.08);}
+    .r-cat{font-size:11px;color:var(--s400);margin-bottom:4px;}
+    .r-pn{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--navy);font-size:13px;word-break:break-all;}
+    .r-maker{font-size:12px;color:var(--s500);margin-top:2px;}
+    .preview-banner{background:var(--orange-bg);border:1px solid var(--orange);border-radius:4px;padding:12px 20px;margin-bottom:24px;font-size:13px;color:var(--orange);font-weight:700;text-align:center;}
+
+    /* ご利用の流れ */
+    .flow-section{background:var(--s50);border-top:1px solid var(--s200);padding:20px 32px;margin-top:32px;}
+    .flow-title{font-size:13px;font-weight:700;color:var(--s600);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+    .flow-steps{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+    .flow-step{display:flex;align-items:center;gap:8px;}
+    .flow-num{width:24px;height:24px;background:var(--navy);color:white;border-radius:50%;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .flow-label{font-size:13px;color:var(--s700);}
+    .flow-arrow{color:var(--s300);font-size:16px;}
+    .footer-bar{background:var(--navy-dark);color:rgba(255,255,255,.6);text-align:center;padding:14px;font-size:12px;margin-top:0;}
+  </style>
+</head>
+<body>
+
+<!-- ===== ログイン ===== -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <img src="https://pivotcore.jp/pivotcore_logo.png" alt="PivotCore">
+      <p>株式会社ピボットコア</p>
+    </div>
+    <div class="login-title">製品管理画面</div>
+    <div class="field">
+      <label>パスワード</label>
+      <input type="password" id="pw" placeholder="パスワードを入力" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="login-btn" onclick="doLogin()">ログイン</button>
+    <div class="login-error" id="login-error">パスワードが正しくありません。</div>
+  </div>
+</div>
+
+<!-- ===== 管理画面 ===== -->
+<div id="main-screen">
+  <header class="header header-main">
+    <div class="header-left">
+      <img src="https://pivotcore.jp/pivotcore_logo.png" alt="PivotCore">
+      <span class="header-title">製品管理画面</span>
+    </div>
+    <div class="header-right">
+      <span id="unsaved-label" style="font-size:12px;color:rgba(255,255,255,.6);display:none;">● 未公開の変更あり</span>
+      <button class="hbtn hbtn-white" onclick="openPreview()">👁 プレビュー・公開</button>
+      <button class="hbtn hbtn-ghost" onclick="doLogout()">ログアウト</button>
+    </div>
+  </header>
+  <div class="content">
+    <div class="settings-panel" id="settings-panel">
+      <h3>⚙️ GitHub連携設定（初回のみ）</h3>
+      <div class="settings-row">
+        <div class="sf"><label>Personal Access Token</label><input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"></div>
+        <div class="sf" style="max-width:200px;"><label>リポジトリ名</label><input type="text" id="gh-repo" value="pivotcore-products"></div>
+        <div class="sf" style="max-width:160px;"><label>GitHubユーザー名</label><input type="text" id="gh-owner" value="hideakitamura714"></div>
+        <button class="sbtn" onclick="saveSettings()">保存</button>
+      </div>
+    </div>
+    <div class="section-header">
+      <span class="section-title" id="product-count">製品一覧（0件）</span>
+      <button class="add-btn" onclick="openModal()">＋ 新しい型番を追加</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:50px;">順序</th>
+            <th>型番</th><th>メーカー</th><th>カテゴリ</th><th>長納期</th><th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div id="empty-state" class="empty-state" style="display:none;">
+        <div style="font-size:32px;">📦</div>
+        <p style="margin-top:8px;">製品が登録されていません。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== プレビュー一覧 ===== -->
+<div id="preview-screen">
+  <header class="header header-preview">
+    <div class="header-left">
+      <span class="screen-badge">プレビュー</span>
+      <span class="header-title">公開前の確認</span>
+    </div>
+    <div class="header-right">
+      <span class="pub-status" id="pub-status"></span>
+      <button class="hbtn hbtn-red" id="pub-btn" onclick="doPublish()">🚀 このまま公開する</button>
+      <button class="hbtn hbtn-ghost" onclick="closePreview()">← 編集に戻る</button>
+    </div>
+  </header>
+  <div class="content">
+    <div class="preview-note">
+      <h3>⚠️ 公開前の確認画面です</h3>
+      <p>カードをクリックすると個別の詳細ページもプレビューできます。問題なければ「このまま公開する」を押してください。</p>
+    </div>
+    <div id="diff-summary" style="margin-bottom:20px;"></div>
+    <div style="font-size:15px;font-weight:700;color:var(--s700);margin-bottom:12px;">型番カード一覧</div>
+    <div class="diff-legend">
+      <span><div class="dl" style="background:#f0fdf4;border:1px solid var(--green);"></div>新規追加</span>
+      <span><div class="dl" style="background:#fefce8;border:1px solid var(--orange);"></div>変更あり</span>
+      <span><div class="dl" style="background:#fef2f2;border:1px solid var(--red);"></div>削除</span>
+      <span style="color:var(--s400);">※ カードをクリックすると詳細ページをプレビューできます</span>
+    </div>
+    <div class="preview-grid" id="preview-grid"></div>
+  </div>
+</div>
+
+<!-- ===== 詳細プレビュー ===== -->
+<div id="detail-screen">
+  <header class="header header-detail">
+    <div class="header-left">
+      <span class="screen-badge screen-badge-detail">詳細プレビュー</span>
+      <span class="header-title" id="detail-header-pn"></span>
+    </div>
+    <div class="header-right">
+      <button class="hbtn hbtn-ghost" onclick="closeDetail()">← 一覧プレビューに戻る</button>
+    </div>
+  </header>
+  <div id="detail-body"></div>
+</div>
+
+<!-- ===== モーダル ===== -->
+<div class="overlay" id="modal">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">新しい型番を追加</div>
+
+    <div class="modal-section">基本情報</div>
+    <div class="form-row">
+      <div class="form-field">
+        <label>型番 <span style="color:var(--red)">*</span></label>
+        <input type="text" id="f-pn" placeholder="例：STM32F205REY6TR" oninput="autoSlug()">
+      </div>
+      <div class="form-field">
+        <label>slug（URL用） <span style="color:var(--red)">*</span></label>
+        <input type="text" id="f-slug" placeholder="例：stm32f205rey6tr">
+        <div class="hint">自動生成。小文字・ハイフンのみ。</div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-field">
+        <label>メーカー名 <span style="color:var(--red)">*</span></label>
+        <input type="text" id="f-maker" placeholder="例：STMicroelectronics">
+      </div>
+      <div class="form-field">
+        <label>カテゴリ <span style="color:var(--red)">*</span></label>
+        <select id="f-cat">
+          <option value="マイコン">マイコン</option>
+          <option value="FPGA">FPGA</option>
+          <option value="電源IC">電源IC</option>
+          <option value="MOSFET">MOSFET</option>
+          <option value="メモリ">メモリ</option>
+          <option value="ロジックIC">ロジックIC</option>
+          <option value="アナログIC">アナログIC</option>
+          <option value="その他">その他</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-field">
+      <label>説明文</label>
+      <textarea id="f-desc" rows="2" placeholder="本製品の調達についてご相談ください。長納期品・調達困難品にも対応しております。"></textarea>
+    </div>
+    <div class="cb-field">
+      <input type="checkbox" id="f-ll">
+      <label for="f-ll">長納期対応バッジを表示する</label>
+    </div>
+
+    <div class="modal-section">スペック情報（任意）</div>
+    <div class="form-row">
+      <div class="form-field">
+        <label>コア</label>
+        <input type="text" id="f-core" placeholder="例：ARM® Cortex®-M3">
+      </div>
+      <div class="form-field">
+        <label>動作周波数</label>
+        <input type="text" id="f-freq" placeholder="例：120 MHz">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-field">
+        <label>フラッシュメモリ</label>
+        <input type="text" id="f-flash" placeholder="例：512 KB">
+      </div>
+      <div class="form-field">
+        <label>パッケージ</label>
+        <input type="text" id="f-pkg" placeholder="例：LQFP-64">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-field">
+        <label>RoHS</label>
+        <select id="f-rohs">
+          <option value="">（未設定）</option>
+          <option value="対応">対応</option>
+          <option value="非対応">非対応</option>
+          <option value="要確認">要確認</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>データシートURL</label>
+        <input type="url" id="f-datasheet" placeholder="https://...">
+      </div>
+    </div>
+
+    <div class="modal-section">主な用途例（最大4項目）</div>
+    <div class="usage-grid">
+      <div class="form-field">
+        <label>用途1</label>
+        <input type="text" id="f-use1" placeholder="例：産業機器制御">
+      </div>
+      <div class="form-field">
+        <label>用途2</label>
+        <input type="text" id="f-use2" placeholder="例：FA機器">
+      </div>
+      <div class="form-field">
+        <label>用途3</label>
+        <input type="text" id="f-use3" placeholder="例：計測機器">
+      </div>
+      <div class="form-field">
+        <label>用途4</label>
+        <input type="text" id="f-use4" placeholder="例：通信機器">
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">キャンセル</button>
+      <button class="btn-save" onclick="saveProduct()">保存する</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const PW = 'pivotcore2026';
+const DEFAULT_DESC = '本製品の調達についてご相談ください。長納期品・調達困難品にも対応しております。';
+
+let products = [], published = [], editingIdx = -1;
+
+// ===== ログイン =====
+function doLogin() {
+  if (document.getElementById('pw').value !== PW) {
+    document.getElementById('login-error').style.display = 'block';
+    document.getElementById('pw').value = ''; return;
+  }
+  show('main-screen');
+  document.getElementById('login-error').style.display = 'none';
+  loadData(); loadSettings();
+}
+function doLogout() {
+  if (hasChanges() && !confirm('未公開の変更があります。ログアウトしますか？')) return;
+  show('login-screen');
+  document.getElementById('pw').value = '';
+}
+function show(id) {
+  ['login-screen','main-screen','preview-screen','detail-screen']
+    .forEach(s => document.getElementById(s).style.display = s===id?'block':'none');
+}
+
+// ===== データ =====
+function loadData() {
+  const raw = localStorage.getItem('pc_products');
+  const pub = localStorage.getItem('pc_published');
+  products = raw ? JSON.parse(raw) : getInitial();
+  published = pub ? JSON.parse(pub) : products.map(p=>({...p}));
+  if (!raw) save();
+  renderTable(); updateUnsaved();
+}
+function save() { localStorage.setItem('pc_products', JSON.stringify(products)); updateUnsaved(); }
+function hasChanges() { return JSON.stringify(products)!==JSON.stringify(published); }
+function updateUnsaved() { document.getElementById('unsaved-label').style.display=hasChanges()?'inline':'none'; }
+
+function getInitial() {
+  const d = DEFAULT_DESC;
+  return [
+    {partNumber:'STM32F103C8T6',slug:'stm32f103c8t6',maker:'STMicroelectronics',category:'マイコン',longLead:true,description:d,core:'ARM® Cortex®-M3',freq:'72 MHz',flash:'64 KB',pkg:'LQFP-48',rohs:'対応',datasheet:'',usages:['産業機器制御','FA機器','計測機器','通信機器']},
+    {partNumber:'STM32H743ZIT6',slug:'stm32h743zit6',maker:'STMicroelectronics',category:'マイコン',longLead:true,description:d,core:'ARM® Cortex®-M7',freq:'480 MHz',flash:'2 MB',pkg:'LQFP-144',rohs:'対応',datasheet:'',usages:['産業機器','FA機器','通信機器']},
+    {partNumber:'STM32G071RBT6',slug:'stm32g071rbt6',maker:'STMicroelectronics',category:'マイコン',longLead:true,description:d,core:'ARM® Cortex®-M0+',freq:'64 MHz',flash:'128 KB',pkg:'LQFP-64',rohs:'対応',datasheet:'',usages:['IoT機器','家電製品']},
+    {partNumber:'XC7A35T-1CSG324C',slug:'xc7a35t-1csg324c',maker:'Xilinx (AMD)',category:'FPGA',longLead:true,description:d,core:'',freq:'',flash:'',pkg:'CSG324',rohs:'対応',datasheet:'',usages:['通信機器','画像処理','産業機器']},
+    {partNumber:'XC7A100T-2FGG484I',slug:'xc7a100t-2fgg484i',maker:'Xilinx (AMD)',category:'FPGA',longLead:true,description:d,core:'',freq:'',flash:'',pkg:'FGG484',rohs:'対応',datasheet:'',usages:['通信機器','映像処理']},
+    {partNumber:'TPS65987DDRSHR',slug:'tps65987ddrshr',maker:'Texas Instruments',category:'電源IC',longLead:true,description:d,core:'',freq:'',flash:'',pkg:'',rohs:'対応',datasheet:'',usages:['USB-C機器','ノートPC']},
+    {partNumber:'LM5175PWPR',slug:'lm5175pwpr',maker:'Texas Instruments',category:'電源IC',longLead:false,description:d,core:'',freq:'',flash:'',pkg:'',rohs:'対応',datasheet:'',usages:['電源設計','産業機器']},
+    {partNumber:'IPP60R099P7XKSA1',slug:'ipp60r099p7xksa1',maker:'Infineon Technologies',category:'MOSFET',longLead:true,description:d,core:'',freq:'',flash:'',pkg:'TO-263-3',rohs:'対応',datasheet:'',usages:['電源回路','モーター制御','産業機器']},
+    {partNumber:'BSC093N15NS3GATMA1',slug:'bsc093n15ns3gatma1',maker:'Infineon Technologies',category:'MOSFET',longLead:false,description:d,core:'',freq:'',flash:'',pkg:'TDSON-8',rohs:'対応',datasheet:'',usages:['DC-DCコンバータ','電源回路']},
+    {partNumber:'CY8C6244AZI-S4D92',slug:'cy8c6244azi-s4d92',maker:'Infineon (Cypress)',category:'マイコン',longLead:true,description:d,core:'ARM® Cortex®-M4/M0+',freq:'150 MHz',flash:'256 KB',pkg:'',rohs:'対応',datasheet:'',usages:['IoT機器','ウェアラブル','産業機器']}
+  ];
+}
+
+// ===== テーブル =====
+function renderTable() {
+  const tbody = document.getElementById('tbody');
+  document.getElementById('product-count').textContent = `製品一覧（${products.length}件）`;
+  document.getElementById('empty-state').style.display = products.length?'none':'block';
+  tbody.innerHTML = products.map((p,i) => `
+    <tr>
+      <td>
+        <div style="display:flex;flex-direction:column;gap:2px;">
+          <button class="tbtn tbtn-up" onclick="moveUp(${i})" ${i===0?'disabled':''}>▲</button>
+          <button class="tbtn tbtn-down" onclick="moveDown(${i})" ${i===products.length-1?'disabled':''}>▼</button>
+        </div>
+      </td>
+      <td><span class="pn">${p.partNumber}</span></td>
+      <td>${p.maker}</td>
+      <td><span class="badge-cat">${p.category}</span></td>
+      <td><span class="badge ${p.longLead?'badge-ll':'badge-no'}">${p.longLead?'長納期対応':'—'}</span></td>
+      <td><div class="action-btns">
+        <button class="tbtn tbtn-edit" onclick="openModal(${i})">編集</button>
+        <button class="tbtn tbtn-del" onclick="delProduct(${i})">削除</button>
+      </div></td>
+    </tr>`).join('');
+}
+function moveUp(i){if(i===0)return;[products[i-1],products[i]]=[products[i],products[i-1]];save();renderTable();}
+function moveDown(i){if(i===products.length-1)return;[products[i],products[i+1]]=[products[i+1],products[i]];save();renderTable();}
+
+// ===== モーダル =====
+function openModal(idx=-1){
+  editingIdx=idx;
+  document.getElementById('modal').classList.add('open');
+  const flds=['f-pn','f-slug','f-maker','f-core','f-freq','f-flash','f-pkg','f-datasheet','f-use1','f-use2','f-use3','f-use4'];
+  if(idx===-1){
+    document.getElementById('modal-title').textContent='新しい型番を追加';
+    flds.forEach(id=>document.getElementById(id).value='');
+    document.getElementById('f-cat').value='マイコン';
+    document.getElementById('f-desc').value=DEFAULT_DESC;
+    document.getElementById('f-ll').checked=true;
+    document.getElementById('f-rohs').value='対応';
+  } else {
+    const p=products[idx];
+    document.getElementById('modal-title').textContent='型番を編集';
+    document.getElementById('f-pn').value=p.partNumber;
+    document.getElementById('f-slug').value=p.slug;
+    document.getElementById('f-maker').value=p.maker;
+    document.getElementById('f-cat').value=p.category;
+    document.getElementById('f-desc').value=p.description;
+    document.getElementById('f-ll').checked=p.longLead;
+    document.getElementById('f-core').value=p.core||'';
+    document.getElementById('f-freq').value=p.freq||'';
+    document.getElementById('f-flash').value=p.flash||'';
+    document.getElementById('f-pkg').value=p.pkg||'';
+    document.getElementById('f-rohs').value=p.rohs||'';
+    document.getElementById('f-datasheet').value=p.datasheet||'';
+    const u=p.usages||[];
+    for(let i=1;i<=4;i++) document.getElementById('f-use'+i).value=u[i-1]||'';
+  }
+}
+function closeModal(){document.getElementById('modal').classList.remove('open');}
+function autoSlug(){
+  document.getElementById('f-slug').value=
+    document.getElementById('f-pn').value.toLowerCase()
+      .replace(/[^a-z0-9-]/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'');
+}
+function saveProduct(){
+  const pn=document.getElementById('f-pn').value.trim();
+  const slug=document.getElementById('f-slug').value.trim();
+  const maker=document.getElementById('f-maker').value.trim();
+  if(!pn||!slug||!maker){alert('型番・slug・メーカー名は必須です。');return;}
+  if(products.find((p,i)=>p.slug===slug&&i!==editingIdx)){alert('同じslugが存在します。');return;}
+  // 用途（空白除去・最大4件）
+  const usages=[1,2,3,4].map(i=>document.getElementById('f-use'+i).value.trim()).filter(Boolean).slice(0,4);
+  const obj={
+    partNumber:pn,slug,maker,
+    category:document.getElementById('f-cat').value,
+    longLead:document.getElementById('f-ll').checked,
+    description:document.getElementById('f-desc').value.trim()||DEFAULT_DESC,
+    core:document.getElementById('f-core').value.trim(),
+    freq:document.getElementById('f-freq').value.trim(),
+    flash:document.getElementById('f-flash').value.trim(),
+    pkg:document.getElementById('f-pkg').value.trim(),
+    rohs:document.getElementById('f-rohs').value,
+    datasheet:document.getElementById('f-datasheet').value.trim(),
+    usages
+  };
+  if(editingIdx===-1) products.push(obj); else products[editingIdx]=obj;
+  save(); renderTable(); closeModal();
+}
+function delProduct(i){
+  if(!confirm(`「${products[i].partNumber}」を削除しますか？`))return;
+  products.splice(i,1); save(); renderTable();
+}
+document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))closeModal();});
+
+// ===== GitHub設定 =====
+function loadSettings(){
+  document.getElementById('gh-token').value=localStorage.getItem('gh_token')||'';
+  document.getElementById('gh-repo').value=localStorage.getItem('gh_repo')||'pivotcore-products';
+  document.getElementById('gh-owner').value=localStorage.getItem('gh_owner')||'hideakitamura714';
+  if(localStorage.getItem('gh_token')) document.getElementById('settings-panel').style.borderLeftColor='#16a34a';
+}
+function saveSettings(){
+  const token=document.getElementById('gh-token').value.trim();
+  if(!token){alert('トークンを入力してください。');return;}
+  localStorage.setItem('gh_token',token);
+  localStorage.setItem('gh_repo',document.getElementById('gh-repo').value.trim());
+  localStorage.setItem('gh_owner',document.getElementById('gh-owner').value.trim());
+  document.getElementById('settings-panel').style.borderLeftColor='#16a34a';
+  alert('設定を保存しました。');
+}
+
+// ===== プレビュー一覧 =====
+function openPreview(){
+  const pubMap=Object.fromEntries(published.map(p=>[p.slug,p]));
+  const newMap=Object.fromEntries(products.map(p=>[p.slug,p]));
+  let added=0,changed=0,removed=0;
+  const cards=[];
+  products.forEach(p=>{
+    const old=pubMap[p.slug];
+    let dc='',tag='';
+    if(!old){dc='diff-added';tag='<span class="diff-tag diff-tag-added">NEW</span>';added++;}
+    else if(JSON.stringify(p)!==JSON.stringify(old)){dc='diff-changed';tag='<span class="diff-tag diff-tag-changed">変更</span>';changed++;}
+    cards.push(`
+      <div class="preview-card ${dc}" onclick="openDetail('${p.slug}')">
+        <div class="cat">${p.category}${tag}</div>
+        <div class="pn-lg">${p.partNumber}</div>
+        <div class="maker">${p.maker}</div>
+        ${p.longLead?'<div class="ll-badge">長納期対応</div>':''}
+        <button class="rfq-btn-prev" onclick="event.stopPropagation();openDetail('${p.slug}')">詳細・見積依頼 ›</button>
+        <div class="click-hint">クリックで詳細ページを確認</div>
+      </div>`);
+  });
+  published.forEach(p=>{
+    if(!newMap[p.slug]){removed++;
+      cards.push(`<div class="preview-card diff-removed">
+        <div class="cat">${p.category}<span class="diff-tag diff-tag-removed">削除</span></div>
+        <div class="pn-lg">${p.partNumber}</div><div class="maker">${p.maker}</div>
+        <button class="rfq-btn-prev" style="background:var(--s400)">詳細・見積依頼 ›</button>
+      </div>`);
+    }
+  });
+  document.getElementById('preview-grid').innerHTML=cards.join('');
+  const parts=[];
+  if(added) parts.push(`<span style="color:var(--green);font-weight:700;">＋${added}件 新規追加</span>`);
+  if(changed) parts.push(`<span style="color:var(--orange);font-weight:700;">✎ ${changed}件 変更</span>`);
+  if(removed) parts.push(`<span style="color:var(--red);font-weight:700;">－${removed}件 削除</span>`);
+  const noChange=!added&&!changed&&!removed;
+  document.getElementById('diff-summary').innerHTML=noChange
+    ?'<div style="background:var(--s100);border-radius:4px;padding:14px 20px;font-size:14px;color:var(--s500);">変更はありません。</div>'
+    :`<div style="background:white;border-radius:4px;padding:14px 20px;box-shadow:0 1px 4px rgba(0,0,0,.08);font-size:14px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+       <span style="font-weight:700;color:var(--s700);">変更内容：</span>${parts.join('<span style="color:var(--s300);">｜</span>')}
+      </div>`;
+  document.getElementById('pub-btn').disabled=noChange;
+  document.getElementById('pub-status').style.display='none';
+  show('preview-screen'); window.scrollTo(0,0);
+}
+function closePreview(){show('main-screen');window.scrollTo(0,0);}
+
+// ===== 詳細プレビュー =====
+function openDetail(slug){
+  const p=products.find(x=>x.slug===slug);
+  if(!p) return;
+  document.getElementById('detail-header-pn').textContent=p.partNumber;
+
+  // スペック行ビルダー
+  function specRow(key,val,link){
+    if(!val) return '';
+    const valHtml=link?`<a href="${link}" target="_blank">${val} ↗</a>`:val;
+    return `<div class="spec-key">${key}</div><div class="spec-val">${valHtml}</div>`;
+  }
+
+  // 2列スペックテーブルの行ペア
+  const specPairs=[
+    ['メーカー',p.maker,''],['コア',p.core,''],
+    ['カテゴリ',p.category,''],['動作周波数',p.freq,''],
+    ['フラッシュメモリ',p.flash,''],['パッケージ',p.pkg,''],
+    ['RoHS',p.rohs,''],['データシート',p.datasheet?'メーカー公式ページで確認する':'',p.datasheet]
+  ].filter(([,v])=>v);
+
+  let specHtml='';
+  if(specPairs.length){
+    // 2列グリッドで表示
+    const rows=[];
+    for(let i=0;i<specPairs.length;i+=2){
+      const [k1,v1,l1]=specPairs[i];
+      const pair=specPairs[i+1];
+      if(pair){
+        const [k2,v2,l2]=pair;
+        rows.push(`<div class="spec-key">${k1}</div><div class="spec-val">${l1?`<a href="${l1}" target="_blank">${v1} ↗</a>`:v1}</div><div class="spec-key">${k2}</div><div class="spec-val">${l2?`<a href="${l2}" target="_blank">${v2} ↗</a>`:v2}</div>`);
+      } else {
+        rows.push(`<div class="spec-key">${k1}</div><div class="spec-val">${l1?`<a href="${l1}" target="_blank">${v1} ↗</a>`:v1}</div><div class="spec-key"></div><div class="spec-val"></div>`);
+      }
+    }
+    specHtml=`<div class="spec-table-2col">${rows.join('')}</div>`;
+  }
+
+  // 用途例（最大4項目、最後に「など」）
+  let usageHtml='';
+  const u=(p.usages||[]).filter(Boolean).slice(0,4);
+  if(u.length){
+    const tags=u.map((item,idx)=>{
+      if(idx===u.length-1){
+        return `<span class="usage-tag-last">${item}<span class="usage-nado">など</span></span>`;
+      }
+      return `<span class="usage-tag">${item}</span>`;
+    }).join('');
+    usageHtml=`<div class="usage-section">
+      <div class="usage-title">主な用途例</div>
+      <div class="usage-list">${tags}</div>
+    </div>`;
+  }
+
+  // 関連製品
+  const related=products.filter(x=>x.category===p.category&&x.slug!==slug).slice(0,3);
+  const relatedHtml=related.length?`
+    <div class="related-section">
+      <div class="detail-section-title">関連製品（${p.category}）</div>
+      <div class="related-grid">${related.map(r=>`
+        <div class="related-card" onclick="openDetail('${r.slug}')">
+          <div class="r-cat">${r.category}</div>
+          <div class="r-pn">${r.partNumber}</div>
+          <div class="r-maker">${r.maker}</div>
+        </div>`).join('')}
+      </div>
+    </div>`:'';
+
+  document.getElementById('detail-body').innerHTML=`
+    <div class="preview-banner">⚠️ これはプレビューです。「このまま公開する」ボタンから反映できます。</div>
+    <div class="detail-hero">
+      <div class="breadcrumb">
+        <a onclick="closeDetail()">ホーム</a> /
+        <a onclick="closeDetail()">調達対応型番一覧</a> /
+        ${p.partNumber}
+      </div>
+      <div class="detail-hero-badges">
+        <span class="dbadge dbadge-cat">${p.category}</span>
+        ${p.longLead?'<span class="dbadge dbadge-ll">長納期対応</span>':''}
+        ${p.pkg?`<span class="dbadge dbadge-pkg">パッケージ：${p.pkg}</span>`:''}
+      </div>
+      <div class="detail-pn">${p.partNumber}</div>
+      <div class="detail-maker">${p.maker}</div>
+    </div>
+    <div class="detail-content">
+      <div class="detail-body">
+        <div>
+          <div class="detail-desc-box"><p>${p.description}</p></div>
+          ${specHtml}
+          ${usageHtml}
+          <div class="detail-policy">
+            <div class="plabel">当社の調達方針</div>
+            <ul>
+              <li>正規品ルートを優先し、模倣品の混入を防止します</li>
+              <li>品質とトレーサビリティ（追跡可能性）を重視します</li>
+              <li>原則24時間以内に一次回答いたします</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="rfq-box">
+            <h3>この型番の調達について相談する</h3>
+            <p>在庫確認・お見積り・納期回答など、お気軽にご相談ください。</p>
+            <button class="rfq-box-btn" onclick="alert('プレビューです。実際のサイトではRFQフォームへ移動します。')">
+              ✉ RFQフォームへ進む（無料）
+            </button>
+            <button class="rfq-box-tel">📞 050-6863-4302（平日 9:00-17:30）</button>
+            <div class="rfq-note">お電話でのご相談も承っております。</div>
+          </div>
+          <a class="back-to-list" onclick="closeDetail()">← 型番一覧に戻る</a>
+        </div>
+      </div>
+      ${relatedHtml}
+    </div>
+    <div class="flow-section">
+      <div class="flow-title">👤 ご利用の流れ</div>
+      <div class="flow-steps">
+        <div class="flow-step"><div class="flow-num">1</div><div class="flow-label">型番検索・ページ確認</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="flow-num">2</div><div class="flow-label">RFQフォームからお問い合わせ</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="flow-num">3</div><div class="flow-label">内容確認・お見積り</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="flow-num">4</div><div class="flow-label">ご回答・ご提案</div></div>
+      </div>
+    </div>
+    <div class="footer-bar">© 2026 PivotCore Co., Ltd.</div>`;
+
+  show('detail-screen'); window.scrollTo(0,0);
+}
+function closeDetail(){show('preview-screen');window.scrollTo(0,0);}
+
+// ===== 公開 =====
+async function doPublish(){
+  const token=localStorage.getItem('gh_token');
+  const repo=localStorage.getItem('gh_repo')||'pivotcore-products';
+  const owner=localStorage.getItem('gh_owner')||'hideakitamura714';
+  if(!token){alert('先にGitHub連携設定でトークンを保存してください。');return;}
+  const btn=document.getElementById('pub-btn');
+  const status=document.getElementById('pub-status');
+  btn.disabled=true;
+  status.className='pub-status ing';
+  status.style.display='inline-block';
+  status.textContent='⏳ 公開中...';
+  try{
+    const getRes=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/products.json`,
+      {headers:{Authorization:`token ${token}`,Accept:'application/vnd.github.v3+json'}});
+    const {sha}=await getRes.json();
+    const content=btoa(unescape(encodeURIComponent(JSON.stringify(products,null,2))));
+    const putRes=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/products.json`,{
+      method:'PUT',
+      headers:{Authorization:`token ${token}`,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},
+      body:JSON.stringify({message:`製品データを更新 (${new Date().toLocaleString('ja-JP')})`,content,sha})
+    });
+    if(!putRes.ok) throw new Error((await putRes.json()).message||'送信失敗');
+    published=products.map(p=>({...p}));
+    localStorage.setItem('pc_published',JSON.stringify(published));
+    updateUnsaved();
+    status.className='pub-status ok';
+    status.textContent='✅ 公開しました！数分でサイトに反映されます。';
+    setTimeout(()=>{status.style.display='none';},8000);
+  }catch(e){
+    status.className='pub-status err';
+    status.textContent=`❌ エラー: ${e.message}`;
+    btn.disabled=false;
+    setTimeout(()=>{status.style.display='none';},8000);
+  }
+}
+</script>
+</body>
+</html>
