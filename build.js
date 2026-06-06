@@ -373,10 +373,17 @@ function main() {
   buildSitemap(entries, site);
   buildRobots(site);
 
+  // 管理画面を dist に含める（固定URLでアクセス可能にする）
+  const adminSrc = path.join(ROOT, 'admin', 'admin.html');
+  if (fs.existsSync(adminSrc)) {
+    writeFile(path.join('admin', 'index.html'), fs.readFileSync(adminSrc, 'utf8'));
+  }
+
   console.log(`✓ ${products.length} 件の製品ページを生成しました。`);
   console.log(`  出力先: ${OUT_DIR}`);
   entries.forEach((e) => console.log(`  - ${site.productsPath}/${e.slug}/`));
   console.log(`  + ${site.productsPath}/ （一覧）, sitemap.xml, robots.txt`);
+  if (fs.existsSync(adminSrc)) console.log(`  + /admin/ （管理画面）`);
 }
 
 main();

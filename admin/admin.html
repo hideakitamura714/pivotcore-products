@@ -278,6 +278,9 @@ tbody td{padding:12px 16px;font-size:13px;vertical-align:middle;}
 <div class="overlay" id="modal">
   <div class="modal">
     <div class="modal-title" id="modal-title">新しい型番を追加</div>
+
+    <div class="form-field"><label>説明文</label><textarea id="f-description" rows="2" placeholder="本製品の調達についてご相談ください。長納期品・調達困難品にも対応しております。"></textarea></div>
+
     <div class="modal-section">基本情報</div>
     <div class="form-row">
       <div class="form-field"><label>型番 <span style="color:var(--red)">*</span></label><input type="text" id="f-partNumber" placeholder="例：STM32F103C8T6"></div>
@@ -287,12 +290,6 @@ tbody td{padding:12px 16px;font-size:13px;vertical-align:middle;}
       <div class="form-field"><label>カテゴリ <span style="color:var(--red)">*</span></label><input type="text" id="f-category" placeholder="例：マイコン (MCU)"></div>
       <div class="form-field"><label>パッケージ</label><input type="text" id="f-package" placeholder="例：LQFP-48"></div>
     </div>
-    <div class="form-field"><label>説明文</label><textarea id="f-description" rows="2" placeholder="本製品の調達についてご相談ください。長納期品・調達困難品にも対応しております。"></textarea></div>
-    <div class="cb-field">
-      <input type="checkbox" id="f-longLead" checked>
-      <label for="f-longLead">長納期対応バッジを表示する</label>
-    </div>
-    <div class="form-field"><label>データシートURL</label><input type="url" id="f-datasheetUrl" placeholder="https://..."></div>
 
     <div class="modal-section">スペック情報（任意）</div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
@@ -301,8 +298,19 @@ tbody td{padding:12px 16px;font-size:13px;vertical-align:middle;}
     </div>
     <div id="spec-rows"></div>
 
-    <div class="modal-section">用途例（カンマ区切り）</div>
-    <div class="form-field"><input type="text" id="f-applications" placeholder="産業機器制御, FA機器, 計測機器"></div>
+    <div style="margin-top:16px;margin-bottom:16px;">
+      <div class="spec-pair" style="align-items:flex-end;">
+        <div style="width:40%;"><label style="display:block;font-size:11px;font-weight:700;color:var(--s500);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px;">RoHS</label><select id="f-rohs" style="width:100%;padding:8px 10px;border:2px solid var(--s200);border-radius:2px;font-size:13px;font-family:'Noto Sans JP',sans-serif;outline:none;"><option value="対応">対応</option><option value="非対応">非対応</option><option value="">未設定</option></select></div>
+        <div style="flex:1;"><label style="display:block;font-size:11px;font-weight:700;color:var(--s500);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px;">データシートURL</label><input type="url" id="f-datasheetUrl" placeholder="https://..." style="width:100%;padding:8px 10px;border:2px solid var(--s200);border-radius:2px;font-size:13px;outline:none;"></div>
+        <span class="spec-del" style="visibility:hidden;">✕</span>
+      </div>
+    </div>
+    <div class="cb-field">
+      <input type="checkbox" id="f-longLead" checked>
+      <label for="f-longLead">長納期対応バッジを表示する</label>
+    </div>
+
+    <div class="form-field"><label>用途例（カンマ区切り）</label><input type="text" id="f-applications" placeholder="産業機器制御, FA機器, 計測機器"></div>
     <div class="form-field"><label>検索キーワード（カンマ区切り）</label><input type="text" id="f-keywords" placeholder="STM32, マイコン, MCU"></div>
 
     <div class="modal-actions">
@@ -353,7 +361,7 @@ function renderTable(){
       '<td>'+esc(p.manufacturer)+'</td>'+
       '<td><span class="badge badge-cat">'+esc(p.category)+'</span></td>'+
       '<td>'+(p.longLead!==false?'<span class="badge badge-ll">長納期対応</span>':'<span class="badge badge-no">—</span>')+'</td>'+
-      '<td class="action-btns"><button class="tbtn tbtn-edit" onclick="openModal('+i+')">編集</button><button class="tbtn tbtn-del" onclick="removeProduct('+i+')">削除</button></td>';
+      '<td><div class="action-btns"><button class="tbtn tbtn-edit" onclick="openModal('+i+')">編集</button><button class="tbtn tbtn-del" onclick="removeProduct('+i+')">削除</button></div></td>';
     tb.appendChild(tr);
   });
   updateUnsaved();
@@ -380,6 +388,7 @@ function openModal(i){
   $('f-package').value=p.package||'';
   $('f-description').value=p.description||'';
   $('f-longLead').checked=p.longLead!==false;
+  $('f-rohs').value=p.rohs||'対応';
   $('f-datasheetUrl').value=p.datasheetUrl||'';
   $('f-applications').value=(p.applications||[]).join(', ');
   $('f-keywords').value=(p.keywords||[]).join(', ');
@@ -406,6 +415,7 @@ function saveProduct(){
     partNumber:pn,manufacturer:mfr,category:cat,
     package:$('f-package').value.trim(),
     longLead:$('f-longLead').checked,
+    rohs:$('f-rohs').value,
     description:$('f-description').value.trim(),
     datasheetUrl:$('f-datasheetUrl').value.trim(),
     specs:specs,
@@ -460,7 +470,13 @@ function closePreview(){show('main-screen');window.scrollTo(0,0);}
 function openDetail(idx){
   const p=working[idx];if(!p)return;
   $('detail-header-pn').textContent=p.partNumber;
-  const specs=[{l:'メーカー',v:p.manufacturer},{l:'カテゴリ',v:p.category},...(p.specs||[]).map(s=>({l:s.label,v:s.value}))];
+  const dynSpecs=(p.specs||[]).filter(s=>s.label!=='パッケージ').map(s=>({l:s.label,v:s.value}));
+  const specs=[{l:'メーカー',v:p.manufacturer}];
+  if(dynSpecs[0])specs.push(dynSpecs[0]);
+  specs.push({l:'カテゴリ',v:p.category});
+  for(let i=1;i<dynSpecs.length;i++)specs.push(dynSpecs[i]);
+  if(p.package)specs.push({l:'パッケージ',v:p.package});
+  if(p.rohs)specs.push({l:'RoHS',v:p.rohs});
   if(p.package)specs.push({l:'パッケージ',v:p.package});
   let specHtml='';
   if(specs.length){
