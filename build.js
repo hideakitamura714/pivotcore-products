@@ -235,12 +235,12 @@ function buildIndexPage(products, site, tpl) {
       .filter(Boolean).join(' ');
     const longLeadBadge = p.longLead !== false
       ? '<div class="mb-3"><span class="badge-longlead">長納期対応</span></div>' : '';
-    return `<a data-card href="${esc(url)}" data-maker="${attr(p.manufacturer)}" data-cat="${attr(p.category)}" data-search="${attr(searchData)}" class="block bg-white border border-slate-200 rounded-sm shadow-sm card-hover overflow-hidden accent-border p-5">
+    return `<a data-card href="${esc(url)}" data-maker="${attr(p.manufacturer)}" data-cat="${attr(p.category)}" data-search="${attr(searchData)}" class="flex flex-col bg-white border border-slate-200 rounded-sm shadow-sm card-hover overflow-hidden accent-border p-5">
         <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">${esc(p.category)}</div>
         <div class="text-lg font-bold text-[#163A8D] font-mono break-all mb-1">${esc(p.partNumber)}</div>
         <div class="text-sm text-slate-500 mb-3">${esc(p.manufacturer)}</div>
         ${longLeadBadge}
-        <div class="bg-red-700 hover:bg-red-800 text-white text-center py-2.5 text-sm font-bold transition">詳細・見積依頼 <i class="fas fa-chevron-right ml-1"></i></div>
+        <div class="mt-auto bg-red-700 hover:bg-red-800 text-white text-center py-2.5 text-sm font-bold transition">詳細・見積依頼 <i class="fas fa-chevron-right ml-1"></i></div>
         <div class="text-center text-xs text-slate-400 mt-2">クリックで詳細ページを確認</div>
     </a>`;
   }).join('\n');
