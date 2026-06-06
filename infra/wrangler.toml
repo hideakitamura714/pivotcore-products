@@ -1,0 +1,27 @@
+# 本番リバースプロキシ Worker の設定
+# 前提: pivotcore.jp が Cloudflare のゾーンとして登録済み（DNS が Cloudflare 管理下）であること。
+
+name = "pivotcore-products-proxy"
+main = "proxy-worker.js"
+compatibility_date = "2024-11-01"
+
+# 転送先 Pages 本番ホスト。Cloudflare で作成した Pages プロジェクト名に合わせて変更。
+# 本番(main)デプロイは <project>.pages.dev に常に最新が反映される。
+[vars]
+PAGES_HOST = "pivotcore-products.pages.dev"
+
+# /products と /products/* のみをこの Worker に紐づける。
+# それ以外のパスは Worker を経由せず既存オリジン(GitHub Pages)へ直接到達する。
+routes = [
+  { pattern = "www.pivotcore.jp/products", zone_name = "pivotcore.jp" },
+  { pattern = "www.pivotcore.jp/products/*", zone_name = "pivotcore.jp" }
+]
+
+# デプロイ:
+#   cd infra
+#   npx wrangler deploy
+#
+# 動作確認:
+#   https://www.pivotcore.jp/products/                → 一覧
+#   https://www.pivotcore.jp/products/stm32f103c8t6/  → 個別ページ
+#   https://www.pivotcore.jp/products/sitemap.xml     → サイトマップ

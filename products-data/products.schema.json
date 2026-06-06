@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PivotCore Products Data",
+  "type": "object",
+  "required": ["products"],
+  "properties": {
+    "site": {
+      "type": "object",
+      "properties": {
+        "company": { "type": "string" },
+        "companyEn": { "type": "string" },
+        "baseUrl": { "type": "string", "format": "uri" },
+        "productsPath": { "type": "string" },
+        "rfqUrl": { "type": "string" },
+        "tel": { "type": "string" },
+        "telHours": { "type": "string" },
+        "logo": { "type": "string" },
+        "ogImage": { "type": "string" }
+      }
+    },
+    "products": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["partNumber", "manufacturer", "category"],
+        "properties": {
+          "partNumber": { "type": "string", "description": "型番（必須）。URLスラッグの元になります。" },
+          "manufacturer": { "type": "string", "description": "メーカー名（必須）" },
+          "category": { "type": "string", "description": "カテゴリ（必須）例：マイコン (MCU)" },
+          "package": { "type": "string", "description": "パッケージ。例：LQFP-48" },
+          "rohs": { "type": "string" },
+          "longLead": { "type": "boolean", "description": "長納期対応バッジを表示する場合 true", "default": true },
+          "description": { "type": "string", "description": "簡易説明文" },
+          "datasheetUrl": { "type": "string", "description": "メーカー公式データシートURL" },
+          "slug": { "type": "string", "description": "URLを手動指定したい場合のみ。未指定なら型番から自動生成。" },
+          "specs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["label", "value"],
+              "properties": {
+                "label": { "type": "string" },
+                "value": { "type": "string" }
+              }
+            }
+          },
+          "applications": { "type": "array", "items": { "type": "string" } },
+          "keywords": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  }
+}

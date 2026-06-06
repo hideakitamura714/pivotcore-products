@@ -1,0 +1,584 @@
+{
+  "$schema": "./products.schema.json",
+  "site": {
+    "company": "株式会社ピボットコア",
+    "companyEn": "PivotCore Inc.",
+    "baseUrl": "https://www.pivotcore.jp",
+    "productsPath": "/products",
+    "rfqUrl": "https://www.pivotcore.jp/#rfq",
+    "tel": "050-6863-4302",
+    "telHours": "平日 9:00-17:30",
+    "logo": "https://www.pivotcore.jp/pivotcore_logo.png",
+    "ogImage": "https://www.pivotcore.jp/pivotcore_ogp.png"
+  },
+  "products": [
+    {
+      "partNumber": "STM32F103C8T6",
+      "manufacturer": "STMicroelectronics",
+      "category": "マイコン (MCU)",
+      "package": "LQFP-48",
+      "rohs": "対応",
+      "description": "STM32F103C8T6は、STMicroelectronics製のARM Cortex-M3コアを搭載した汎用32ビットマイコンです。産業機器を中心に広く採用されており、長納期・入手困難な状況が続いております。在庫確認・代替提案・お見積りなど、お気軽にご相談ください。",
+      "datasheetUrl": "https://www.st.com/en/microcontrollers-microprocessors/stm32f103c8.html",
+      "specs": [
+        {
+          "label": "コア",
+          "value": "ARM® Cortex®-M3"
+        },
+        {
+          "label": "動作周波数",
+          "value": "72 MHz"
+        },
+        {
+          "label": "フラッシュメモリ",
+          "value": "64 KB"
+        },
+        {
+          "label": "パッケージ",
+          "value": "LQFP-48"
+        }
+      ],
+      "applications": [
+        "産業機器制御",
+        "FA機器",
+        "計測機器",
+        "通信機器",
+        "家電製品"
+      ],
+      "keywords": [
+        "STM32",
+        "STM32F103",
+        "マイコン",
+        "MCU",
+        "Cortex-M3"
+      ],
+      "longLead": true
+    },
+    {
+      "partNumber": "STM32F205REY6TR",
+      "manufacturer": "STMicroelectronics",
+      "category": "マイコン (MCU)",
+      "package": "LQFP-64",
+      "rohs": "対応",
+      "description": "STM32F205REY6TRは、STMicroelectronics製の高性能32ビットマイコンです。現在、長納期・入手困難な状況が続いております。調達・在庫確認・代替提案など、お気軽にお問い合わせください。",
+      "datasheetUrl": "https://www.st.com/en/microcontrollers-microprocessors/stm32f205re.html",
+      "specs": [
+        {
+          "label": "コア",
+          "value": "ARM® Cortex®-M3"
+        },
+        {
+          "label": "動作周波数",
+          "value": "120 MHz"
+        },
+        {
+          "label": "フラッシュメモリ",
+          "value": "512 KB"
+        },
+        {
+          "label": "パッケージ",
+          "value": "LQFP-64"
+        }
+      ],
+      "applications": [
+        "産業機器制御",
+        "FA機器",
+        "計測機器",
+        "通信機器",
+        "家電製品"
+      ],
+      "keywords": [
+        "STM32",
+        "STM32F205",
+        "マイコン",
+        "MCU",
+        "Cortex-M3"
+      ],
+      "longLead": true
+    },
+    {
+      "partNumber": "STM32F407VGT6",
+      "manufacturer": "STMicroelectronics",
+      "category": "マイコン (MCU)",
+      "package": "LQFP-100",
+      "rohs": "対応",
+      "description": "STM32F407VGT6は、STMicroelectronics製のARM Cortex-M4コアを搭載した高性能マイコンです。需給逼迫により調達が難しい状況が続いております。代替品のクロスリファレンス調査も承ります。",
+      "datasheetUrl": "https://www.st.com/en/microcontrollers-microprocessors/stm32f407vg.html",
+      "specs": [
+        {
+          "label": "コア",
+          "value": "ARM® Cortex®-M4 (FPU)"
+        },
+        {
+          "label": "動作周波数",
+          "value": "168 MHz"
+        },
+        {
+          "label": "フラッシュメモリ",
+          "value": "1 MB"
+        },
+        {
+          "label": "パッケージ",
+          "value": "LQFP-100"
+        }
+      ],
+      "applications": [
+        "産業機器制御",
+        "モータ制御",
+        "計測機器",
+        "通信機器",
+        "オーディオ機器"
+      ],
+      "keywords": [
+        "STM32",
+        "STM32F407",
+        "マイコン",
+        "MCU",
+        "Cortex-M4"
+      ],
+      "longLead": true
+    },
+    {
+      "partNumber": "XC7A35T-1FTG256C",
+      "manufacturer": "AMD (Xilinx)",
+      "category": "FPGA",
+      "package": "FTBGA-256",
+      "rohs": "対応",
+      "description": "XC7A35T-1FTG256Cは、AMD(Xilinx)製のArtix-7シリーズFPGAです。供給不足・長納期化が顕著な製品群のひとつです。市場在庫の確保および代替提案について、お気軽にご相談ください。",
+      "datasheetUrl": "https://www.amd.com/en/products/adaptive-socs-and-fpgas/fpga/artix-7.html",
+      "specs": [
+        {
+          "label": "ファミリ",
+          "value": "Artix-7"
+        },
+        {
+          "label": "ロジックセル",
+          "value": "33,280"
+        },
+        {
+          "label": "ブロックRAM",
+          "value": "1,800 Kb"
+        },
+        {
+          "label": "DSPスライス",
+          "value": "90"
+        },
+        {
+          "label": "I/Oピン",
+          "value": "170"
+        },
+        {
+          "label": "パッケージ",
+          "value": "FTBGA-256"
+        }
+      ],
+      "applications": [
+        "産業用ネットワーク",
+        "画像処理",
+        "計測機器",
+        "通信インフラ",
+        "FA機器"
+      ],
+      "keywords": [
+        "FPGA",
+        "Xilinx",
+        "AMD",
+        "Artix-7",
+        "XC7A35T"
+      ],
+      "longLead": true
+    },
+    {
+      "partNumber": "10M08SAE144C8G",
+      "manufacturer": "Intel (Altera)",
+      "category": "FPGA",
+      "package": "EQFP-144",
+      "rohs": "対応",
+      "description": "10M08SAE144C8Gは、Intel(Altera)製のMAX 10シリーズFPGAです。EOL・需給逼迫により調達が困難な状況が見られます。在庫確認・代替提案を含めてご相談を承ります。",
+      "datasheetUrl": "https://www.intel.com/content/www/us/en/products/details/fpga/max-10.html",
+      "specs": [
+        {
+          "label": "ファミリ",
+          "value": "MAX 10"
+        },
+        {
+          "label": "ロジックエレメント",
+          "value": "8,000"
+        },
+        {
+          "label": "ユーザフラッシュ",
+          "value": "内蔵"
+        },
+        {
+          "label": "I/Oピン",
+          "value": "101"
+        },
+        {
+          "label": "動作温度",
+          "value": "0°C - 85°C"
+        },
+        {
+          "label": "パッケージ",
+          "value": "EQFP-144"
+        }
+      ],
+      "applications": [
+        "産業機器",
+        "民生機器",
+        "計測機器",
+        "FA機器",
+        "通信機器"
+      ],
+      "keywords": [
+        "FPGA",
+        "Altera",
+        "Intel",
+        "MAX 10",
+        "10M08"
+      ],
+      "longLead": true
+    },
+    {
+      "partNumber": "TPS54560DDAR",
+      "manufacturer": "Texas Instruments",
+      "category": "電源IC (DC/DCコンバータ)",
+      "package": "SO PowerPAD-8",
+      "rohs": "対応",
+      "description": "TPS54560DDARは、Texas Instruments製の降圧型DC/DCコンバータICです。電源IC全般で需給逼迫が続いております。在庫確認・代替品提案など、調達のご相談を承ります。",
+      "datasheetUrl": "https://www.ti.com/product/TPS54560",
+      "specs": [
+        {
+          "label": "種別",
+          "value": "降圧 (Buck) コンバータ"
+        },
+        {
+          "label": "入力電圧",
+          "value": "4.5V - 60V"
+        },
+        {
+          "label": "出力電流",
+          "value": "5 A"
+        },
+        {
+          "label": "スイッチング周波数",
+          "value": "100kHz - 2.5MHz"
+        },
+        {
+          "label": "動作温度",
+          "value": "-40°C - 150°C"
+        },
+        {
+          "label": "パッケージ",
+          "value": "SO PowerPAD-8"
+        }
+      ],
+      "applications": [
+        "産業用電源",
+        "車載機器",
+        "通信機器",
+        "FA機器",
+        "計測機器"
+      ],
+      "keywords": [
+        "TI",
+        "Texas Instruments",
+        "電源IC",
+        "DCDC",
+        "TPS54560"
+      ],
+      "longLead": true
+    },
+    {
+      "partNumber": "LM2596S-ADJ",
+      "manufacturer": "Texas Instruments",
+      "category": "電源IC (DC/DCコンバータ)",
+      "package": "TO-263-5",
+      "rohs": "対応",
+      "description": "LM2596S-ADJは、Texas Instruments製の降圧型スイッチングレギュレータです。ロングセラー品ながら需給が逼迫する場面が見られます。調達・代替提案についてお気軽にご相談ください。",
+      "datasheetUrl": "https://www.ti.com/product/LM2596",
+      "specs": [
+        {
+          "label": "種別",
+          "value": "降圧 (Buck) レギュレータ"
+        },
+        {
+          "label": "入力電圧",
+          "value": "最大 40V"
+        },
+        {
+          "label": "出力電流",
+          "value": "3 A"
+        },
+        {
+          "label": "出力電圧",
+          "value": "可変 (1.2V - 37V)"
+        },
+        {
+          "label": "スイッチング周波数",
+          "value": "150 kHz"
+        },
+        {
+          "label": "パッケージ",
+          "value": "TO-263-5"
+        }
+      ],
+      "applications": [
+        "産業用電源",
+        "民生機器",
+        "FA機器",
+        "通信機器",
+        "計測機器"
+      ],
+      "keywords": [
+        "TI",
+        "Texas Instruments",
+        "電源IC",
+        "レギュレータ",
+        "LM2596"
+      ],
+      "longLead": true
+    },
+    {
+      "partNumber": "IRFP460PBF",
+      "manufacturer": "Infineon Technologies",
+      "category": "パワーMOSFET",
+      "package": "TO-247",
+      "rohs": "対応",
+      "description": "IRFP460PBFは、Infineon Technologies製のNチャネルパワーMOSFETです。パワー半導体は需給逼迫が続いており、長納期化が見られます。在庫確認・代替提案を含めご相談を承ります。",
+      "datasheetUrl": "https://www.infineon.com/cms/en/product/power/mosfet/",
+      "specs": [
+        {
+          "label": "チャネル",
+          "value": "Nチャネル"
+        },
+        {
+          "label": "ドレイン-ソース電圧 (VDSS)",
+          "value": "500 V"
+        },
+        {
+          "label": "連続ドレイン電流 (ID)",
+          "value": "20 A"
+        },
+        {
+          "label": "オン抵抗 (RDS(on))",
+          "value": "0.27 Ω"
+        },
+        {
+          "label": "ゲート閾値電圧",
+          "value": "2.0V - 4.0V"
+        },
+        {
+          "label": "パッケージ",
+          "value": "TO-247"
+        }
+      ],
+      "applications": [
+        "スイッチング電源",
+        "インバータ",
+        "産業用電源",
+        "モータ駆動",
+        "溶接機"
+      ],
+      "keywords": [
+        "Infineon",
+        "MOSFET",
+        "パワー半導体",
+        "IRFP460",
+        "Nチャネル"
+      ],
+      "longLead": true
+    },
+    {
+      "partNumber": "IKW40N120H3",
+      "manufacturer": "Infineon Technologies",
+      "category": "IGBT",
+      "package": "TO-247",
+      "rohs": "対応",
+      "description": "IKW40N120H3は、Infineon Technologies製の1200V IGBTです。パワー系デバイスは需給逼迫・長納期化が続いております。市場在庫の確保および代替提案についてご相談ください。",
+      "datasheetUrl": "https://www.infineon.com/cms/en/product/power/igbt/",
+      "specs": [
+        {
+          "label": "種別",
+          "value": "IGBT (アンチパラレルダイオード内蔵)"
+        },
+        {
+          "label": "コレクタ-エミッタ電圧 (VCES)",
+          "value": "1200 V"
+        },
+        {
+          "label": "コレクタ電流 (IC)",
+          "value": "40 A"
+        },
+        {
+          "label": "飽和電圧 (VCE(sat))",
+          "value": "2.05 V (typ)"
+        },
+        {
+          "label": "動作温度",
+          "value": "-40°C - 175°C"
+        },
+        {
+          "label": "パッケージ",
+          "value": "TO-247"
+        }
+      ],
+      "applications": [
+        "インバータ",
+        "産業用電源",
+        "溶接機",
+        "UPS",
+        "モータ駆動"
+      ],
+      "keywords": [
+        "Infineon",
+        "IGBT",
+        "パワー半導体",
+        "IKW40N120",
+        "1200V"
+      ],
+      "longLead": true
+    },
+    {
+      "partNumber": "ATMEGA328P-PU",
+      "manufacturer": "Microchip Technology",
+      "category": "マイコン (MCU)",
+      "package": "PDIP-28",
+      "rohs": "対応",
+      "description": "ATMEGA328P-PUは、Microchip(旧Atmel)製の8ビットAVRマイコンです。教育・産業の両分野で広く使われ、需給が逼迫する場面があります。調達・在庫確認についてご相談ください。",
+      "datasheetUrl": "https://www.microchip.com/en-us/product/atmega328p",
+      "specs": [
+        {
+          "label": "アーキテクチャ",
+          "value": "8-bit AVR"
+        },
+        {
+          "label": "動作周波数",
+          "value": "最大 20 MHz"
+        },
+        {
+          "label": "フラッシュメモリ",
+          "value": "32 KB"
+        },
+        {
+          "label": "パッケージ",
+          "value": "PDIP-28"
+        }
+      ],
+      "applications": [
+        "産業機器制御",
+        "計測機器",
+        "民生機器",
+        "教育機器",
+        "IoT機器"
+      ],
+      "keywords": [
+        "Microchip",
+        "Atmel",
+        "AVR",
+        "ATMEGA328P",
+        "マイコン"
+      ],
+      "longLead": true
+    },
+    {
+      "partNumber": "FT232RL",
+      "manufacturer": "FTDI",
+      "category": "インターフェースIC (USB-UART)",
+      "package": "SSOP-28",
+      "rohs": "対応",
+      "description": "FT232RLは、FTDI製のUSB-シリアル(UART)変換ICです。広く普及している一方で需給逼迫が見られます。在庫確認・代替提案についてお気軽にご相談ください。",
+      "datasheetUrl": "https://ftdichip.com/products/ft232rl/",
+      "specs": [
+        {
+          "label": "機能",
+          "value": "USB 2.0 - UART 変換"
+        },
+        {
+          "label": "データレート",
+          "value": "最大 3 Mbaud"
+        },
+        {
+          "label": "USB",
+          "value": "Full Speed (12 Mbps)"
+        },
+        {
+          "label": "電源",
+          "value": "3.3V / 5V"
+        },
+        {
+          "label": "EEPROM",
+          "value": "内蔵"
+        },
+        {
+          "label": "パッケージ",
+          "value": "SSOP-28"
+        }
+      ],
+      "applications": [
+        "産業機器",
+        "計測機器",
+        "通信機器",
+        "開発ボード",
+        "FA機器"
+      ],
+      "keywords": [
+        "FTDI",
+        "USB",
+        "UART",
+        "FT232RL",
+        "インターフェース"
+      ],
+      "longLead": true
+    },
+    {
+      "partNumber": "MAX232CPE",
+      "manufacturer": "Analog Devices (Maxim)",
+      "category": "インターフェースIC (RS-232)",
+      "package": "PDIP-16",
+      "rohs": "対応",
+      "description": "MAX232CPEは、Analog Devices(旧Maxim)製のRS-232トランシーバICです。保守用途を中心に根強い需要があり、調達が難しい場面があります。在庫確認・代替提案を承ります。",
+      "datasheetUrl": "https://www.analog.com/en/products/max232.html",
+      "specs": [
+        {
+          "label": "機能",
+          "value": "RS-232 ドライバ/レシーバ"
+        },
+        {
+          "label": "ドライバ数",
+          "value": "2"
+        },
+        {
+          "label": "レシーバ数",
+          "value": "2"
+        },
+        {
+          "label": "電源電圧",
+          "value": "5 V"
+        },
+        {
+          "label": "データレート",
+          "value": "最大 120 kbps"
+        },
+        {
+          "label": "パッケージ",
+          "value": "PDIP-16"
+        }
+      ],
+      "applications": [
+        "産業機器",
+        "保守・補修",
+        "計測機器",
+        "通信機器",
+        "FA機器"
+      ],
+      "keywords": [
+        "Maxim",
+        "Analog Devices",
+        "RS-232",
+        "MAX232",
+        "インターフェース"
+      ],
+      "longLead": true
+    }
+  ]
+}

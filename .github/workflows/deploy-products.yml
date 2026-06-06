@@ -1,0 +1,58 @@
+name: Build & Deploy Product Pages
+
+# uat / staging / main それぞれの環境へブランチ単位でデプロイする。
+#   uat     → UATプレビュー   : uat.pivotcore-products.pages.dev
+#   staging → 検証プレビュー   : staging.pivotcore-products.pages.dev
+#   main    → 本番           : 独自ドメイン www.pivotcore.jp/products/（プロキシ経由）
+on:
+  push:
+    branches: [uat, staging, main]
+    paths:
+      - 'products-data/**'
+      - 'templates/**'
+      - 'build.js'
+      - '.github/workflows/deploy-products.yml'
+  # 管理画面などからの手動実行も可能（実行時に選んだブランチへデプロイ）
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    # ブランチ名がそのまま Cloudflare Pages のデプロイ先ブランチになる。
+    # main はプロジェクトの本番ブランチ＝本番デプロイ、それ以外はプレビュー（安定エイリアス付き）。
+    environment: ${{ github.ref_name }}
+    steps:
+      - name: リポジトリを取得
+        uses: actions/checkout@v4
+
+      - name: Node.js をセットアップ
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # build.js は外部依存なしのため install 不要。
+      # 依存を追加した場合は下記コメントを有効化してください。
+      # - name: 依存関係をインストール
+      #   run: npm ci
+
+      - name: 静的ページを生成 (node build.js)
+        run: node build.js
+
+      - name: 生成物を確認
+        run: |
+          echo "デプロイ先ブランチ: ${{ github.ref_name }}"
+          echo "生成されたファイル:"
+          find dist -type f | sort
+          test -f dist/products/index.html || (echo "::error::dist/products/index.html が生成されていません" && exit 1)
+
+      - name: Cloudflare Pages へデプロイ
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # Pages プロジェクト名は Cloudflare ダッシュボードで作成したものに合わせる。
+          # --branch にトリガー元ブランチを渡すことで、main=本番 / その他=プレビュー に振り分く。
+          command: pages deploy dist --project-name=pivotcore-products --branch=${{ github.ref_name }}
