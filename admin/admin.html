@@ -461,7 +461,9 @@ function openPreview(){
   if(added)parts.push('<span style="color:var(--green);font-weight:700;">＋'+added+'件 新規追加</span>');
   if(changed)parts.push('<span style="color:var(--orange);font-weight:700;">✎ '+changed+'件 変更</span>');
   if(removed)parts.push('<span style="color:var(--red);font-weight:700;">－'+removed+'件 削除</span>');
-  const noChange=!added&&!changed&&!removed;
+  const orderChanged=original.length===working.length&&original.some((p,i)=>toSlug(p.partNumber)!==toSlug(working[i].partNumber));
+  if(orderChanged)parts.push('<span style="color:var(--navy);font-weight:700;">↕ 並び順変更</span>');
+  const noChange=!added&&!changed&&!removed&&!orderChanged;
   $('diff-summary').innerHTML=noChange
     ?'<div style="background:var(--s100);border-radius:4px;padding:14px 20px;font-size:14px;color:var(--s500);">変更はありません。</div>'
     :'<div style="background:#fff;border-radius:4px;padding:14px 20px;box-shadow:0 1px 4px rgba(0,0,0,.08);font-size:14px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;"><span style="font-weight:700;color:var(--s700);">変更内容：</span>'+parts.join('<span style="color:var(--s300);">｜</span>')+'</div>';
