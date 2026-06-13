@@ -215,7 +215,12 @@ tbody td{padding:12px 16px;font-size:13px;vertical-align:middle;}
   <div class="content">
     <div class="section-header">
       <span class="section-title" id="product-count">製品一覧（0件）</span>
-      <button class="add-btn" onclick="openModal()">＋ 新しい型番を追加</button>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="tbtn tbtn-edit" onclick="exportData()" title="製品データをJSONファイルとしてダウンロード">📥 エクスポート</button>
+        <button class="tbtn tbtn-edit" onclick="$('import-file').click()" title="JSONファイルから製品データを読み込み">📤 インポート</button>
+        <input type="file" id="import-file" accept=".json" style="display:none;" onchange="importData(this)">
+        <button class="add-btn" onclick="openModal()">＋ 新しい型番を追加</button>
+      </div>
     </div>
     <div class="table-wrap">
       <table>
@@ -567,6 +572,41 @@ async function doPublish(){
     btn.disabled=false;
     setTimeout(()=>{status.style.display='none';},8000);
   }
+}
+
+// ===== エクスポート・インポート =====
+function exportData(){
+  const data={site:siteMeta,products:working};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='products_'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+function importData(input){
+  const file=input.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const data=JSON.parse(e.target.result);
+      const prods=data.products||data;
+      if(!Array.isArray(prods))throw new Error('製品データの配列が見つかりません');
+      const missing=prods.filter(p=>!p.partNumber||!p.manufacturer||!p.category);
+      if(missing.length)throw new Error(missing.length+'件の製品に必須項目（型番/メーカー/カテゴリ）が不足しています');
+      if(!confirm(prods.length+'件の製品データをインポートします。現在のデータは上書きされます。よろしいですか？'))return;
+      if(data.site)siteMeta=data.site;
+      working=prods;
+      renderTable();
+      alert('✅ '+prods.length+'件の製品データをインポートしました。内容を確認後「プレビュー・公開」から公開してください。');
+    }catch(err){
+      alert('❌ インポートエラー: '+err.message);
+    }
+  };
+  reader.readAsText(file);
+  input.value='';
 }
 </script>
 </body>
