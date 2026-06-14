@@ -1,5 +1,4 @@
 {
-  "$schema": "./products.schema.json",
   "site": {
     "company": "株式会社ピボットコア",
     "companyEn": "PivotCore Inc.",
@@ -579,6 +578,28 @@
         "インターフェース"
       ],
       "longLead": true
+    },
+    {
+      "partNumber": "でんぱ組",
+      "manufacturer": "でんぱ組",
+      "category": "でんぱ組",
+      "package": "でんぱ組",
+      "longLead": true,
+      "rohs": "対応",
+      "description": "でんぱ組",
+      "datasheetUrl": "https://dempagumi.tokyo/",
+      "specs": [
+        {
+          "label": "でんぱ組",
+          "value": "でんぱ組"
+        }
+      ],
+      "applications": [
+        "でんぱ組"
+      ],
+      "keywords": [
+        "でんぱ組"
+      ]
     }
   ]
 }
